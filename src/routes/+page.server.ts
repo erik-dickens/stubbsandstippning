@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db'
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { player, predictionItem, round, prediction } from '../../drizzle/schema.js'
 import type { PageServerLoad, Actions } from './$types'
 import { fail } from '@sveltejs/kit'
@@ -9,9 +9,19 @@ export const load = (async () => {
 	const currentRound = await db.select().from(round).where(eq(round.current, true))
 	if (currentRound.length > 0) {
 		const predictionItems = await db.select().from(predictionItem).where(eq(predictionItem.roundId, currentRound[0].id))
-		return { currentRound: currentRound[0], players, predictionItems }
+		const predictionItemIds = predictionItems.map((item) => item.id)
+		const submittedPlayerIds =
+			predictionItemIds.length > 0
+				? (
+						await db
+							.selectDistinct({ playerId: prediction.playerId })
+							.from(prediction)
+							.where(inArray(prediction.predictionItemId, predictionItemIds))
+					).map((r) => r.playerId)
+				: []
+		return { currentRound: currentRound[0], players, predictionItems, submittedPlayerIds }
 	}
-	return { currentRound: null, players, predictionItems: [] }
+	return { currentRound: null, players, predictionItems: [], submittedPlayerIds: [] as number[] }
 }) satisfies PageServerLoad
 
 export const actions = {
@@ -40,6 +50,5 @@ export const actions = {
 		await db.insert(prediction).values(values)
 
 		return { success: true }
-	}
+	},
 } satisfies Actions
-

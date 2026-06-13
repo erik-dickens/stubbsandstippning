@@ -31,6 +31,10 @@
 	)
 
 	const selectedPlayerName = $derived(data.players.find((p) => String(p.id) === String(selectedPlayerId))?.name ?? '')
+
+	const alreadySubmitted = $derived(
+		selectedPlayerId !== '' && data.submittedPlayerIds.includes(Number(selectedPlayerId))
+	)
 </script>
 
 {#if data.currentRound}
@@ -47,47 +51,49 @@
 			</select>
 		</div>
 
-		<div class="prediction-items">
-			{#each data.predictionItems as item, i (item.id)}
-				<div class="prediction-item">
-					<p class="item-question">
-						<strong>
-							{#if !item.question}
-								Match {i + 1}:
-							{:else}
-								{item.question}
-							{/if}
-						</strong>
-					</p>
-					<div class="options">
-						{#each getOptions(item.options) as option (option)}
-							<button
-								type="button"
-								class:selected={selections[item.id] === option}
-								onclick={() => selectOption(item.id, option)}
-							>
-								{option}
-							</button>
-						{/each}
-					</div>
-					{#if selections[item.id]}
-						<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
-					{/if}
-				</div>
-			{/each}
-		</div>
-
-		{#if form?.error}
-			<p class="feedback error">{form.error}</p>
-		{/if}
-
 		{#if form?.success}
 			<p class="feedback success">Tippningen skickad!</p>
-		{/if}
+		{:else if alreadySubmitted}
+			<p class="already-submitted">{selectedPlayerName} har redan tippat i {data.currentRound.name}</p>
+		{:else if selectedPlayerId !== ''}
+			<div class="prediction-items">
+				{#each data.predictionItems as item, i (item.id)}
+					<div class="prediction-item">
+						<p class="item-question">
+							<strong>
+								{#if !item.question}
+									Match {i + 1}:
+								{:else}
+									{item.question}
+								{/if}
+							</strong>
+						</p>
+						<div class="options">
+							{#each getOptions(item.options) as option (option)}
+								<button
+									type="button"
+									class:selected={selections[item.id] === option}
+									onclick={() => selectOption(item.id, option)}
+								>
+									{option}
+								</button>
+							{/each}
+						</div>
+						{#if selections[item.id]}
+							<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
+						{/if}
+					</div>
+				{/each}
+			</div>
 
-		<button type="submit" class="submit-btn" disabled={!allAnswered}>
-			Skicka in {selectedPlayerName ? `${selectedPlayerName}s` : ''} tippning!
-		</button>
+			{#if form?.error}
+				<p class="feedback error">{form.error}</p>
+			{/if}
+
+			<button type="submit" class="submit-btn" disabled={!allAnswered}>
+				Skicka in {selectedPlayerName ? `${selectedPlayerName}s` : ''} tippning!
+			</button>
+		{/if}
 	</form>
 {:else}
 	<p>Ingen aktiv omgång just nu.</p>
@@ -100,6 +106,12 @@
 	.round-name {
 		margin-bottom: var(--space-l);
 		font-size: var(--font-size-500);
+	}
+
+	.already-submitted {
+		margin-top: var(--space-l);
+		font-size: var(--font-size-500);
+		color: var(--color-neutral-700);
 	}
 
 	.player-select {
