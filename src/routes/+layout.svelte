@@ -2,10 +2,22 @@
 	import favicon from '$lib/assets/favicon.svg'
 	import banner from '$lib/assets/banner.png'
 	import { page } from '$app/state'
+	import { onNavigate } from '$app/navigation'
 	import '../global.css'
 	import { resolve } from '$app/paths'
 
 	let { children } = $props()
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return
+
+		return new Promise((done) => {
+			document.startViewTransition(async () => {
+				done()
+				await navigation.complete
+			})
+		})
+	})
 </script>
 
 <svelte:head>
@@ -18,9 +30,13 @@
 	</header>
 
 	<nav class="nav">
-		<a href={resolve('/')} class:active={page.url.pathname === '/'}>{page.url.pathname !== '/' ? '<' : ''}Tippa!</a>
-		<a href={resolve('/resultat')} class:active={page.url.pathname === '/resultat'}
-			>Resultat {page.url.pathname !== '/resultat' ? '>' : ''}</a
+		<a href={resolve('/')} class:active={page.url.pathname === '/'} style="view-transition-name: nav-tippa"
+			>{page.url.pathname !== '/' ? '<' : ''}Tippa!</a
+		>
+		<a
+			href={resolve('/resultat')}
+			class:active={page.url.pathname === '/resultat'}
+			style="view-transition-name: nav-resultat">Resultat {page.url.pathname !== '/resultat' ? '>' : ''}</a
 		>
 	</nav>
 
@@ -87,5 +103,11 @@
 
 	.content {
 		padding: var(--space-l);
+	}
+
+	:global(::view-transition-group(nav-tippa)),
+	:global(::view-transition-group(nav-resultat)) {
+		animation-duration: 350ms;
+		animation-timing-function: ease-in-out;
 	}
 </style>
