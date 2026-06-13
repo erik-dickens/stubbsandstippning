@@ -40,59 +40,60 @@
 {#if data.currentRound}
 	<form method="POST" action="?/submit" use:enhance>
 		<p class="round-name">Omgång: <strong>{data.currentRound.name}</strong></p>
-
-		<div class="player-select">
-			<label for="playerId">Vem är du?</label>
-			<select id="playerId" name="playerId" bind:value={selectedPlayerId} required>
-				<option value="" disabled>Välj...</option>
-				{#each data.players as p (p.id)}
-					<option value={p.id}>{p.name}</option>
-				{/each}
-			</select>
-		</div>
-
 		{#if form?.success}
 			<p class="feedback success">Tippningen skickad!</p>
-		{:else if alreadySubmitted}
-			<p class="already-submitted">{selectedPlayerName} har redan tippat i {data.currentRound.name}</p>
-		{:else if selectedPlayerId !== ''}
-			<div class="prediction-items">
-				{#each data.predictionItems as item, i (item.id)}
-					<div class="prediction-item">
-						<p class="item-question">
-							<strong>
-								{#if !item.question}
-									Match {i + 1}:
-								{:else}
-									{item.question}
-								{/if}
-							</strong>
-						</p>
-						<div class="options">
-							{#each getOptions(item.options) as option (option)}
-								<button
-									type="button"
-									class:selected={selections[item.id] === option}
-									onclick={() => selectOption(item.id, option)}
-								>
-									{option}
-								</button>
-							{/each}
-						</div>
-						{#if selections[item.id]}
-							<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
-						{/if}
-					</div>
-				{/each}
+		{:else}
+			<div class="player-select">
+				<label for="playerId">Tippa som:</label>
+				<select id="playerId" name="playerId" bind:value={selectedPlayerId} required>
+					<option value="" disabled>Välj...</option>
+					{#each data.players as p (p.id)}
+						<option value={p.id}>{p.name}</option>
+					{/each}
+				</select>
 			</div>
 
-			{#if form?.error}
-				<p class="feedback error">{form.error}</p>
-			{/if}
+			{#if alreadySubmitted}
+				<p class="already-submitted">{selectedPlayerName} har redan tippat i {data.currentRound.name}</p>
+			{:else if selectedPlayerId !== ''}
+				<div class="prediction-items">
+					{#each data.predictionItems as item, i (item.id)}
+						<div class="prediction-item">
+							<p class="item-question">
+								<strong>
+									{#if !item.question}
+										Match {i + 1}:
+									{:else}
+										{item.question}
+									{/if}
+								</strong>
+							</p>
+							<div class="options">
+								{#each getOptions(item.options) as option (option)}
+									<button
+										type="button"
+										class:selected={selections[item.id] === option}
+										onclick={() => selectOption(item.id, option)}
+									>
+										{option}
+									</button>
+								{/each}
+							</div>
+							{#if selections[item.id]}
+								<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
+							{/if}
+						</div>
+					{/each}
+				</div>
 
-			<button type="submit" class="submit-btn" disabled={!allAnswered}>
-				Skicka in {selectedPlayerName ? `${selectedPlayerName}s` : ''} tippning!
-			</button>
+				{#if form?.error}
+					<p class="feedback error">{form.error}</p>
+				{/if}
+
+				<button type="submit" class="submit-btn" disabled={!allAnswered}>
+					Skicka in {selectedPlayerName ? `${selectedPlayerName}s` : ''} tippning!
+				</button>
+			{/if}
 		{/if}
 	</form>
 {:else}
