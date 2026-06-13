@@ -3,6 +3,7 @@
 	import banner from '$lib/assets/banner.png'
 	import { page } from '$app/state'
 	import '../global.css'
+	import { resolve } from '$app/paths'
 
 	let { children } = $props()
 </script>
@@ -17,8 +18,10 @@
 	</header>
 
 	<nav class="nav">
-		<a href="/" class:active={page.url.pathname === '/'}>Tippa!</a>
-		<a href="/resultat">Resultat &gt;</a>
+		<a href={resolve('/')} class:active={page.url.pathname === '/'}>{page.url.pathname !== '/' ? '<' : ''}Tippa!</a>
+		<a href={resolve('/resultat')} class:active={page.url.pathname === '/resultat'}
+			>Resultat {page.url.pathname !== '/resultat' ? '>' : ''}</a
+		>
 	</nav>
 
 	<main class="content">
@@ -43,9 +46,9 @@
 	}
 
 	.nav {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
 		align-items: baseline;
-		gap: var(--space-l);
 		padding: var(--space-m) var(--space-l);
 		border-bottom: 1px solid var(--color-neutral-200);
 
@@ -53,6 +56,26 @@
 			text-decoration: none;
 			color: var(--color-neutral-700);
 			font-size: var(--font-size-500);
+
+			&:first-child {
+				grid-column: 1;
+				justify-self: start;
+			}
+
+			&:first-child.active {
+				grid-column: 2;
+				justify-self: center;
+			}
+
+			&:last-child {
+				grid-column: 3;
+				justify-self: end;
+			}
+
+			&:last-child.active {
+				grid-column: 2;
+				justify-self: center;
+			}
 
 			&.active {
 				font-size: var(--font-size-600);
