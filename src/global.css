@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 *,
 *::before,
 *::after {
@@ -7,6 +10,9 @@
 }
 
 :root {
+	--font-family-heading: 'Caveat Brush', cursive, system-ui, -apple-system, sans-serif;
+	--font-family-body: 'Noto Sans', system-ui, -apple-system, sans-serif;
+
 	--font-size-300: clamp(0.8rem, 2vw, 0.875rem);
 	--font-size-400: clamp(0.875rem, 2.5vw, 1rem);
 	--font-size-500: clamp(1rem, 3vw, 1.125rem);
@@ -33,14 +39,17 @@
 }
 
 body {
-	font-family:
-		system-ui,
-		-apple-system,
-		sans-serif;
+	font-family: var(--font-family-body);
 	font-size: var(--font-size-400);
 	color: var(--color-neutral-900);
 	background: var(--color-neutral-100);
 	line-height: 1.5;
 	display: flex;
 	justify-content: center;
+}
+
+button {
+	font-family: var(--font-family-body);
+	font-size: var(--font-size-400);
+	font-weight: 300;
 }

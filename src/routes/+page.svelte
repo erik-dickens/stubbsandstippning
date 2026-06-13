@@ -60,13 +60,11 @@
 					{#each data.predictionItems as item, i (item.id)}
 						<div class="prediction-item">
 							<p class="item-question">
-								<strong>
-									{#if !item.question}
-										Match {i + 1}:
-									{:else}
-										{item.question}
-									{/if}
-								</strong>
+								{#if !item.question}
+									Match {i + 1}:
+								{:else}
+									{item.question}
+								{/if}
 							</p>
 							<div class="options">
 								{#each getOptions(item.options) as option (option)}
@@ -107,6 +105,7 @@
 	.round-name {
 		margin-bottom: var(--space-l);
 		font-size: var(--font-size-500);
+		font-weight: 300;
 	}
 
 	.already-submitted {
@@ -124,6 +123,7 @@
 
 		label {
 			font-size: var(--font-size-400);
+			font-weight: 300;
 		}
 
 		select {
@@ -140,18 +140,19 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: var(--space-l);
+		gap: var(--space-xl);
 		margin-bottom: var(--space-xl);
 	}
 
 	.prediction-item {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-s);
+		gap: var(--space-m);
 	}
 
 	.item-question {
 		font-size: var(--font-size-400);
+		font-weight: 500;
 	}
 
 	.options {

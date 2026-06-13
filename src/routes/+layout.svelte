@@ -62,6 +62,7 @@
 	}
 
 	.nav {
+		font-family: var(--font-family-heading);
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
 		align-items: baseline;
@@ -71,7 +72,7 @@
 		a {
 			text-decoration: none;
 			color: var(--color-neutral-700);
-			font-size: var(--font-size-500);
+			font-size: var(--font-size-800);
 
 			&:first-child {
 				grid-column: 1;
