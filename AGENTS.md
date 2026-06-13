@@ -11,7 +11,8 @@ The repo uses `pnpm` package manager (current version 10).
 The project uses a PostgresQL database hosted at supabase.
 It uses drizzle ORM as a data access layer.
 
-Schema is defines in ./drizzle/schema.ts
+Schema is defined in ./drizzle/schema.ts
+The database instance is imported from "$lib/server/db"
 
 You SHOULD remind and warn the user that changes to the database schema can require creation of migration files (`./drizzle/*.sql`). You should not start creating such migration files without explicit approval, but you SHOULD be aware of this and prompt the user when necessary.
 
