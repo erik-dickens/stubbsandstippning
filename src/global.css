@@ -36,6 +36,8 @@
 	--color-neutral-400: #a7a7a7;
 	--color-neutral-700: #555;
 	--color-neutral-900: #1a1a1a;
+
+	--border-radius: 8px;
 }
 
 body {
@@ -52,4 +54,5 @@ button {
 	font-family: var(--font-family-body);
 	font-size: var(--font-size-400);
 	font-weight: 300;
+	border-radius: var(--border-radius);
 }

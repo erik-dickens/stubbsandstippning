@@ -164,13 +164,14 @@
 			padding: var(--space-s) var(--space-l);
 			font-size: var(--font-size-400);
 			border: 1px solid var(--color-neutral-400);
-			border-radius: 4px;
 			background: white;
 			cursor: pointer;
 
 			&.selected {
+				outline: 1px solid var(--color-green-500);
 				background: var(--color-green-300);
 				border-color: var(--color-green-500);
+				font-weight: 400;
 			}
 		}
 	}
@@ -194,10 +195,10 @@
 	.submit-btn {
 		padding: var(--space-m) var(--space-xl);
 		font-size: var(--font-size-400);
+		font-weight: 500;
 		background: var(--color-green-500);
 		color: white;
 		border: none;
-		border-radius: 4px;
 		cursor: pointer;
 
 		&:hover:not(:disabled) {
