@@ -39,7 +39,7 @@
 
 {#if data.currentRound}
 	<form method="POST" action="?/submit" use:enhance>
-		<p class="round-name">Omgång: <strong>{data.currentRound.name}</strong></p>
+		<p class="round-name"><strong>{data.currentRound.name}</strong></p>
 		{#if form?.success}
 			<p class="feedback success">Tippningen skickad!</p>
 		{:else}
