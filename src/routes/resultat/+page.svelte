@@ -5,6 +5,17 @@
 
 	type View = 'stallning' | 'tippningar'
 	let activeView = $state<View>('stallning')
+
+	function getOptions(options: unknown): string[] {
+		if (Array.isArray(options)) return options.filter((o): o is string => typeof o === 'string')
+		return []
+	}
+
+	function getDisplayText(value: unknown): string {
+		if (typeof value === 'string') return value.slice(0, 3)
+		if (typeof value === 'number') return String(value).slice(0, 3)
+		return '?'
+	}
 </script>
 
 <div class="controls">
@@ -26,7 +37,38 @@
 		{/each}
 	</ol>
 {:else}
-	<p class="under-construction">Under construction</p>
+	<div class="matrix-scroll">
+		<table class="matrix">
+			<thead>
+				<tr>
+					<th class="player-col"></th>
+					{#each data.items as item (item.id)}
+						<th>
+							{#each getOptions(item.options) as option}
+								{option.slice(0, 3)}<br />
+							{/each}
+						</th>
+					{/each}
+				</tr>
+			</thead>
+			<tbody>
+				{#each data.players as player (player.id)}
+					<tr>
+						<td class="player-col">{player.name}</td>
+						{#each data.items as item (item.id)}
+							{@const pred = data.predictionLookup[`${player.id}_${item.id}`]}
+							{@const hasAnswer = item.correctAnswer !== null && item.correctAnswer !== undefined}
+							{@const correct = pred !== undefined && hasAnswer && JSON.stringify(pred) === JSON.stringify(item.correctAnswer)}
+							{@const wrong = pred !== undefined && hasAnswer && !correct}
+							<td class:correct class:wrong>
+								{pred !== undefined ? getDisplayText(pred) : ''}
+							</td>
+						{/each}
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 {/if}
 
 <style>
@@ -95,8 +137,50 @@
 		font-variant-numeric: tabular-nums;
 	}
 
-	.under-construction {
+	.matrix-scroll {
+		overflow-x: auto;
 		padding: var(--space-l);
-		color: var(--color-neutral-400);
+	}
+
+	.matrix {
+		border-collapse: collapse;
+		font-size: var(--font-size-300);
+	}
+
+	.matrix th,
+	.matrix td {
+		padding: var(--space-xs) var(--space-s);
+		border: 1px solid var(--color-neutral-200);
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.matrix thead th {
+		background: var(--color-neutral-200);
+		font-weight: 600;
+		line-height: 1.3;
+		white-space: normal;
+		min-width: 3.5ch;
+	}
+
+	.player-col {
+		text-align: left;
+		white-space: nowrap;
+		position: sticky;
+		left: 0;
+		background: var(--color-neutral-100);
+		z-index: 1;
+	}
+
+	.matrix thead .player-col {
+		background: var(--color-neutral-200);
+	}
+
+	.correct {
+		background: var(--color-green-300);
+	}
+
+	.wrong {
+		background: #f5a5a5;
 	}
 </style>

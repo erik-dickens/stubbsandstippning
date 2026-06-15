@@ -29,5 +29,13 @@ export const load = (async () => {
 
 	scores.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
 
-	return { scores }
+	const playersSorted = [...players].sort((a, b) => a.name.localeCompare(b.name))
+	const itemsSorted = [...allPredictionItems].sort(
+		(a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+	)
+	const predictionLookup = Object.fromEntries(
+		allPredictions.map((p) => [`${p.playerId}_${p.predictionItemId}`, p.value])
+	)
+
+	return { scores, players: playersSorted, items: itemsSorted, predictionLookup }
 }) satisfies PageServerLoad
