@@ -1,0 +1,33 @@
+import { db } from '$lib/server/db'
+import { player, predictionItem, round, prediction } from '../../../drizzle/schema.js'
+import type { PageServerLoad } from './$types'
+
+export const load = (async () => {
+	const [players, allPredictions, allPredictionItems, allRounds] = await Promise.all([
+		db.select().from(player),
+		db.select().from(prediction),
+		db.select().from(predictionItem),
+		db.select().from(round),
+	])
+
+	const itemMap = new Map(allPredictionItems.map((item) => [item.id, item]))
+	const roundMap = new Map(allRounds.map((r) => [r.id, r]))
+
+	const scores = players.map((p) => {
+		let score = 0
+		for (const pred of allPredictions) {
+			if (pred.playerId !== p.id) continue
+			const item = itemMap.get(pred.predictionItemId)
+			if (!item || item.correctAnswer === null) continue
+			if (JSON.stringify(pred.value) === JSON.stringify(item.correctAnswer)) {
+				const r = roundMap.get(item.roundId)
+				if (r) score += r.points
+			}
+		}
+		return { name: p.name, score }
+	})
+
+	scores.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+
+	return { scores }
+}) satisfies PageServerLoad

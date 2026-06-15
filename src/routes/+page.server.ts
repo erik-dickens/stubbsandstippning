@@ -1,14 +1,18 @@
 import { db } from '$lib/server/db'
-import { eq, inArray } from 'drizzle-orm'
+import { eq, asc, inArray } from 'drizzle-orm'
 import { player, predictionItem, round, prediction } from '../../drizzle/schema.js'
 import type { PageServerLoad, Actions } from './$types'
 import { fail } from '@sveltejs/kit'
 
 export const load = (async () => {
-	const players = await db.select().from(player)
+	const players = await db.select().from(player).orderBy(asc(player.name))
 	const currentRound = await db.select().from(round).where(eq(round.current, true))
 	if (currentRound.length > 0) {
-		const predictionItems = await db.select().from(predictionItem).where(eq(predictionItem.roundId, currentRound[0].id))
+		const predictionItems = await db
+			.select()
+			.from(predictionItem)
+			.where(eq(predictionItem.roundId, currentRound[0].id))
+			.orderBy(asc(predictionItem.createdAt))
 		const predictionItemIds = predictionItems.map((item) => item.id)
 		const submittedPlayerIds =
 			predictionItemIds.length > 0
