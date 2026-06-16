@@ -6,6 +6,24 @@
 	type View = 'stallning' | 'tippningar'
 	let activeView = $state<View>('stallning')
 
+	const roundGroups = $derived.by(() => {
+		const roundMap = new Map(data.rounds.map((r) => [r.id, r.name]))
+		const groups: { roundId: number; roundName: string; items: typeof data.items }[] = []
+		for (const item of data.items) {
+			const roundName = roundMap.get(item.roundId) ?? 'Okänd omgång'
+			const last = groups[groups.length - 1]
+			if (last && last.roundId === item.roundId) {
+				last.items.push(item)
+			} else {
+				groups.push({ roundId: item.roundId, roundName, items: [item] })
+			}
+		}
+		return groups
+	})
+
+	const lastInGroupIds = $derived(new Set(roundGroups.map((g) => g.items[g.items.length - 1].id)))
+	const lockedRoundIds = $derived(new Set(data.lockedRoundIds))
+
 	function getOptions(options: unknown): string[] {
 		if (Array.isArray(options)) return options.filter((o): o is string => typeof o === 'string')
 		return []
@@ -42,8 +60,16 @@
 			<thead>
 				<tr>
 					<th class="player-col"></th>
+					{#each roundGroups as group (group.roundId)}
+						<th class="round-header" class:group-end={true} colspan={group.items.length}>
+							{group.roundName}
+						</th>
+					{/each}
+				</tr>
+				<tr>
+					<th class="player-col"></th>
 					{#each data.items as item (item.id)}
-						<th>
+						<th class:group-end={lastInGroupIds.has(item.id)}>
 							{#each getOptions(item.options) as option}
 								{option.slice(0, 3)}<br />
 							{/each}
@@ -58,10 +84,15 @@
 						{#each data.items as item (item.id)}
 							{@const pred = data.predictionLookup[`${player.id}_${item.id}`]}
 							{@const hasAnswer = item.correctAnswer !== null && item.correctAnswer !== undefined}
-							{@const correct = pred !== undefined && hasAnswer && JSON.stringify(pred) === JSON.stringify(item.correctAnswer)}
-							{@const wrong = pred !== undefined && hasAnswer && !correct}
-							<td class:correct class:wrong>
-								{pred !== undefined ? getDisplayText(pred) : ''}
+							{@const locked = lockedRoundIds.has(item.roundId)}
+							{@const correct =
+								!locked &&
+								pred !== undefined &&
+								hasAnswer &&
+								JSON.stringify(pred) === JSON.stringify(item.correctAnswer)}
+							{@const wrong = !locked && pred !== undefined && hasAnswer && !correct}
+							<td class:correct class:wrong class:group-end={lastInGroupIds.has(item.id)}>
+								{pred !== undefined ? (locked ? 'x' : getDisplayText(pred)) : ''}
 							</td>
 						{/each}
 					</tr>
@@ -174,6 +205,17 @@
 
 	.matrix thead .player-col {
 		background: var(--color-neutral-200);
+	}
+
+	.matrix .round-header {
+		text-align: left;
+		font-size: var(--font-size-200);
+		letter-spacing: 0.05em;
+		border-bottom: none;
+	}
+
+	.matrix .group-end {
+		border-right: 2px dotted var(--color-neutral-400);
 	}
 
 	.correct {

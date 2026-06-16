@@ -37,5 +37,17 @@ export const load = (async () => {
 		allPredictions.map((p) => [`${p.playerId}_${p.predictionItemId}`, p.value])
 	)
 
-	return { scores, players: playersSorted, items: itemsSorted, predictionLookup }
+	const now = new Date()
+	const lockedRoundIds = new Set(
+		allRounds.filter((r) => r.endTime !== null && new Date(r.endTime) > now).map((r) => r.id)
+	)
+
+	return {
+		scores,
+		players: playersSorted,
+		items: itemsSorted,
+		predictionLookup,
+		rounds: allRounds,
+		lockedRoundIds: [...lockedRoundIds],
+	}
 }) satisfies PageServerLoad
