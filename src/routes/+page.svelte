@@ -40,7 +40,9 @@
 {#if data.currentRound}
 	<form method="POST" action="?/submit" use:enhance>
 		<p class="round-name"><strong>{data.currentRound.name}</strong></p>
-		{#if form?.success}
+		{#if data.isClosed}
+			<p class="closed">Tippningen är stängd, matcherna har redan börjat spelas.</p>
+		{:else if form?.success}
 			<p class="feedback success">Tippningen skickad!</p>
 		{:else}
 			<div class="player-select">
@@ -111,6 +113,12 @@
 	.already-submitted {
 		margin-top: var(--space-l);
 		font-size: var(--font-size-500);
+		color: var(--color-neutral-700);
+	}
+
+	.closed {
+		margin-top: var(--space-l);
+		font-size: var(--font-size-400);
 		color: var(--color-neutral-700);
 	}
 

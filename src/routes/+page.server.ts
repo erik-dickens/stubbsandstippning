@@ -23,9 +23,11 @@ export const load = (async () => {
 							.where(inArray(prediction.predictionItemId, predictionItemIds))
 					).map((r) => r.playerId)
 				: []
-		return { currentRound: currentRound[0], players, predictionItems, submittedPlayerIds }
+
+		const isClosed = currentRound[0].endTime !== null && new Date(currentRound[0].endTime) < new Date()
+		return { currentRound: currentRound[0], players, predictionItems, submittedPlayerIds, isClosed }
 	}
-	return { currentRound: null, players, predictionItems: [], submittedPlayerIds: [] as number[] }
+	return { currentRound: null, players, predictionItems: [], submittedPlayerIds: [] as number[], isClosed: false }
 }) satisfies PageServerLoad
 
 export const actions = {
@@ -35,6 +37,14 @@ export const actions = {
 
 		if (!playerId || typeof playerId !== 'string') {
 			return fail(400, { error: 'Välj en spelare' })
+		}
+
+		const currentRound = await db.select().from(round).where(eq(round.current, true))
+		if (currentRound.length === 0) {
+			return fail(400, { error: 'Ingen aktiv omgång' })
+		}
+		if (currentRound[0].endTime !== null && new Date(currentRound[0].endTime) < new Date()) {
+			return fail(400, { error: `Tippningen är stängd för ${currentRound[0].name}` })
 		}
 
 		const values: { playerId: number; predictionItemId: number; value: string }[] = []
