@@ -20,8 +20,12 @@ export const load = (async () => {
 			const item = itemMap.get(pred.predictionItemId)
 			if (!item || item.correctAnswer === null) continue
 			if (JSON.stringify(pred.value) === JSON.stringify(item.correctAnswer)) {
-				const r = roundMap.get(item.roundId)
-				if (r) score += r.points
+				if (item.points) {
+					score += item.points
+				} else {
+					const r = roundMap.get(item.roundId)
+					if (r) score += r.points
+				}
 			}
 		}
 		return { name: p.name, score }
