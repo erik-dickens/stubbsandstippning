@@ -46,7 +46,7 @@
 			<p class="feedback success">Tippningen skickad!</p>
 		{:else}
 			<div class="player-select">
-				<label for="playerId">Tippa som:</label>
+				<label for="playerId">Vem är du?</label>
 				<select id="playerId" name="playerId" bind:value={selectedPlayerId} required>
 					<option value="" disabled>Välj...</option>
 					{#each data.players as p (p.id)}

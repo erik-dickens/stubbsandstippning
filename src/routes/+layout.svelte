@@ -47,7 +47,7 @@
 
 <style>
 	.app {
-		max-width: 600px;
+		max-width: min(600px, 100%);
 		margin: 0 auto;
 	}
 

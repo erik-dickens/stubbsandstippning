@@ -21,7 +21,6 @@
 		return groups
 	})
 
-	const lastInGroupIds = $derived(new Set(roundGroups.map((g) => g.items[g.items.length - 1].id)))
 	const lockedRoundIds = $derived(new Set(data.lockedRoundIds))
 
 	function getOptions(options: unknown): string[] {
@@ -55,51 +54,50 @@
 		{/each}
 	</ol>
 {:else}
-	<div class="matrix-scroll">
-		<table class="matrix">
-			<thead>
-				<tr>
-					<th class="player-col"></th>
-					{#each roundGroups as group (group.roundId)}
-						<th class="round-header" class:group-end={true} colspan={group.items.length}>
-							{group.roundName}
-						</th>
-					{/each}
-				</tr>
-				<tr>
-					<th class="player-col"></th>
-					{#each data.items as item (item.id)}
-						<th class:group-end={lastInGroupIds.has(item.id)}>
-							{#each getOptions(item.options) as option}
-								{option.slice(0, 3)}<br />
+	{#each roundGroups as group (group.roundId)}
+		{#if group.items.length > 0}
+			<div class="round-section">
+				<h2 class="round-title">{group.roundName}</h2>
+				<div class="matrix-scroll">
+					<table class="matrix">
+						<thead>
+							<tr>
+								<th class="player-col"></th>
+								{#each group.items as item (item.id)}
+									<th>
+										{#each getOptions(item.options) as option}
+											{option.slice(0, 3)}<br />
+										{/each}
+									</th>
+								{/each}
+							</tr>
+						</thead>
+						<tbody>
+							{#each data.players as player (player.id)}
+								<tr>
+									<td class="player-col">{player.name}</td>
+									{#each group.items as item (item.id)}
+										{@const pred = data.predictionLookup[`${player.id}_${item.id}`]}
+										{@const hasAnswer = item.correctAnswer !== null && item.correctAnswer !== undefined}
+										{@const locked = lockedRoundIds.has(item.roundId)}
+										{@const correct =
+											!locked &&
+											pred !== undefined &&
+											hasAnswer &&
+											JSON.stringify(pred) === JSON.stringify(item.correctAnswer)}
+										{@const wrong = !locked && pred !== undefined && hasAnswer && !correct}
+										<td class:correct class:wrong>
+											{pred !== undefined ? (locked ? 'x' : getDisplayText(pred)) : ''}
+										</td>
+									{/each}
+								</tr>
 							{/each}
-						</th>
-					{/each}
-				</tr>
-			</thead>
-			<tbody>
-				{#each data.players as player (player.id)}
-					<tr>
-						<td class="player-col">{player.name}</td>
-						{#each data.items as item (item.id)}
-							{@const pred = data.predictionLookup[`${player.id}_${item.id}`]}
-							{@const hasAnswer = item.correctAnswer !== null && item.correctAnswer !== undefined}
-							{@const locked = lockedRoundIds.has(item.roundId)}
-							{@const correct =
-								!locked &&
-								pred !== undefined &&
-								hasAnswer &&
-								JSON.stringify(pred) === JSON.stringify(item.correctAnswer)}
-							{@const wrong = !locked && pred !== undefined && hasAnswer && !correct}
-							<td class:correct class:wrong class:group-end={lastInGroupIds.has(item.id)}>
-								{pred !== undefined ? (locked ? 'x' : getDisplayText(pred)) : ''}
-							</td>
-						{/each}
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{/if}
+	{/each}
 {/if}
 
 <style>
@@ -207,15 +205,13 @@
 		background: var(--color-neutral-200);
 	}
 
-	.matrix .round-header {
-		text-align: left;
-		font-size: var(--font-size-200);
-		letter-spacing: 0.05em;
-		border-bottom: none;
+	.round-section {
+		padding-bottom: var(--space-l);
 	}
 
-	.matrix .group-end {
-		border-right: 2px dotted var(--color-neutral-400);
+	.round-title {
+		padding: 0 var(--space-l) var(--space-s);
+		font-size: var(--font-size-400);
 	}
 
 	.correct {
