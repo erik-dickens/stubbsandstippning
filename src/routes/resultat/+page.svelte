@@ -23,6 +23,19 @@
 
 	const lockedRoundIds = $derived(new Set(data.lockedRoundIds))
 
+	const roundProgress = $derived.by(() => {
+		const roundMap = new Map(data.rounds.map((r) => [r.id, r.name]))
+		const map = new Map<number, { name: string; total: number; answered: number }>()
+		for (const item of data.items) {
+			const name = roundMap.get(item.roundId) ?? 'Okänd omgång'
+			const entry = map.get(item.roundId) ?? { name, total: 0, answered: 0 }
+			entry.total++
+			if (item.correctAnswer !== null && item.correctAnswer !== undefined) entry.answered++
+			map.set(item.roundId, entry)
+		}
+		return [...map.values()]
+	})
+
 	function getOptions(options: unknown): string[] {
 		if (Array.isArray(options)) return options.filter((o): o is string => typeof o === 'string')
 		return []
@@ -53,6 +66,12 @@
 			</li>
 		{/each}
 	</ol>
+	<ul class="round-progress">
+		<li><strong>Rättade matcher:</strong></li>
+		{#each roundProgress as r (r.name)}
+			<li>{r.name} ({r.answered}/{r.total})</li>
+		{/each}
+	</ul>
 {:else}
 	{#each roundGroups as group (group.roundId)}
 		{#if group.items.length > 0}
@@ -132,6 +151,16 @@
 				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 			}
 		}
+	}
+
+	.round-progress {
+		list-style: none;
+		padding: 0 var(--space-l) var(--space-m);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+		color: var(--color-neutral-600);
+		font-size: var(--font-size-300);
 	}
 
 	.scoreboard {
