@@ -155,7 +155,7 @@
 
 	.round-progress {
 		list-style: none;
-		padding: 0 var(--space-l) var(--space-m);
+		padding: var(--space-m) var(--space-l);
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-xs);
