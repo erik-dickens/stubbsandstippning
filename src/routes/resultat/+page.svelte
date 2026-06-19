@@ -56,6 +56,9 @@
 </div>
 
 {#if activeView === 'stallning'}
+	{#if data.isGameOver && data.scores.length > 0}
+		<p class="winner">🎉 Grattis {data.scores[0].name}!! 🎉</p>
+	{/if}
 	<ol class="scoreboard">
 		{#each data.scores as entry, i (entry.name)}
 			<li>
@@ -168,6 +171,13 @@
 		gap: var(--space-xs);
 		color: var(--color-neutral-600);
 		font-size: var(--font-size-300);
+	}
+
+	.winner {
+		text-align: center;
+		font-family: var(--font-family-heading);
+		font-size: var(--font-size-700);
+		padding: var(--space-l) var(--space-l) 0;
 	}
 
 	.scoreboard {

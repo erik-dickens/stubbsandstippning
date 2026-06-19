@@ -20,7 +20,7 @@ export const load = (async () => {
 			if (pred.playerId !== p.id) continue
 			const item = itemMap.get(pred.predictionItemId)
 			if (!item || item.correctAnswer === null) continue
-			if (JSON.stringify(pred.value) === JSON.stringify(item.correctAnswer)) {
+			if (!item.tieBreaker && JSON.stringify(pred.value) === JSON.stringify(item.correctAnswer)) {
 				if (item.points) {
 					score += item.points
 				} else {
@@ -60,6 +60,10 @@ export const load = (async () => {
 		allRounds.filter((r) => r.endTime !== null && new Date(r.endTime) > now).map((r) => r.id)
 	)
 
+	const hasTieBreaker = allPredictionItems.some((item) => item.tieBreaker)
+	const allAnswered = allPredictionItems.length > 0 && allPredictionItems.every((item) => item.correctAnswer !== null)
+	const isGameOver = hasTieBreaker && allAnswered
+
 	return {
 		scores,
 		players: playersSorted,
@@ -67,5 +71,6 @@ export const load = (async () => {
 		predictionLookup,
 		rounds: allRounds,
 		lockedRoundIds: [...lockedRoundIds],
+		isGameOver,
 	}
 }) satisfies PageServerLoad
