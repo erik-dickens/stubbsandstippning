@@ -68,19 +68,39 @@
 									{item.question}
 								{/if}
 							</p>
-							<div class="options">
-								{#each getOptions(item.options) as option (option)}
-									<button
-										type="button"
-										class:selected={selections[item.id] === option}
-										onclick={() => selectOption(item.id, option)}
-									>
-										{option}
-									</button>
-								{/each}
-							</div>
-							{#if selections[item.id]}
-								<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
+							{#if item.tieBreaker}
+								<input
+									class="tiebreaker-input"
+									type="number"
+									name="item_{item.id}"
+									min="0"
+									max="999"
+									oninput={(e) => {
+										const val = e.currentTarget.value
+										if (val !== '') {
+											selections = { ...selections, [item.id]: val }
+										} else {
+											const updated = { ...selections }
+											delete updated[item.id]
+											selections = updated
+										}
+									}}
+								/>
+							{:else}
+								<div class="options">
+									{#each getOptions(item.options) as option (option)}
+										<button
+											type="button"
+											class:selected={selections[item.id] === option}
+											onclick={() => selectOption(item.id, option)}
+										>
+											{option}
+										</button>
+									{/each}
+								</div>
+								{#if selections[item.id]}
+									<input type="hidden" name="item_{item.id}" value={selections[item.id]} />
+								{/if}
 							{/if}
 						</div>
 					{/each}
@@ -161,6 +181,16 @@
 	.item-question {
 		font-size: var(--font-size-400);
 		font-weight: 500;
+	}
+
+	.tiebreaker-input {
+		align-self: center;
+		padding: var(--space-s) var(--space-m);
+		font-size: var(--font-size-400);
+		border: 1px solid var(--color-neutral-400);
+		border-radius: 4px;
+		width: 9ch;
+		text-align: center;
 	}
 
 	.options {
