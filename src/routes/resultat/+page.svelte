@@ -62,7 +62,14 @@
 				<span class="rank">{i + 1}.</span>
 				<span class="name">{entry.name}</span>
 				<span class="dots" aria-hidden="true"></span>
-				<span class="score">{entry.score}</span>
+				<span class="score">
+					{entry.score}
+					{#if entry.tieBreakerDiff !== null}
+						<span class="tiebreaker-diff"
+							>{entry.tieBreakerDiff >= 0 ? `(+${entry.tieBreakerDiff})` : `(${entry.tieBreakerDiff})`}</span
+						>
+					{/if}
+				</span>
 			</li>
 		{/each}
 	</ol>
@@ -193,6 +200,15 @@
 	.score {
 		font-weight: bold;
 		font-variant-numeric: tabular-nums;
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-xs);
+	}
+
+	.tiebreaker-diff {
+		font-size: var(--font-size-300);
+		font-weight: 400;
+		color: var(--color-neutral-600);
 	}
 
 	.matrix-scroll {

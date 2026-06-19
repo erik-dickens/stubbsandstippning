@@ -15,6 +15,7 @@ export const load = (async () => {
 
 	const scores = players.map((p) => {
 		let score = 0
+		let tieBreakerDiff: number | null = null
 		for (const pred of allPredictions) {
 			if (pred.playerId !== p.id) continue
 			const item = itemMap.get(pred.predictionItemId)
@@ -27,11 +28,24 @@ export const load = (async () => {
 					if (r) score += r.points
 				}
 			}
+			if (item.tieBreaker) {
+				const predicted = Number(pred.value)
+				const correct = Number(item.correctAnswer)
+				if (!isNaN(predicted) && !isNaN(correct)) {
+					tieBreakerDiff = (tieBreakerDiff ?? 0) + (predicted - correct)
+				}
+			}
 		}
-		return { name: p.name, score }
+		return { name: p.name, score, tieBreakerDiff }
 	})
 
-	scores.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+	scores.sort((a, b) => {
+		if (b.score !== a.score) return b.score - a.score
+		const aAbs = a.tieBreakerDiff !== null ? Math.abs(a.tieBreakerDiff) : Infinity
+		const bAbs = b.tieBreakerDiff !== null ? Math.abs(b.tieBreakerDiff) : Infinity
+		if (aAbs !== bAbs) return aAbs - bAbs
+		return a.name.localeCompare(b.name)
+	})
 
 	const playersSorted = [...players].sort((a, b) => a.name.localeCompare(b.name))
 	const itemsSorted = [...allPredictionItems].sort(
