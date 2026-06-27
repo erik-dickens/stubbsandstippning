@@ -144,6 +144,7 @@
 		gap: 2px;
 
 		button {
+			font-size: var(--font-size-500);
 			border: none;
 			background: transparent;
 			padding: var(--space-xs) var(--space-m);

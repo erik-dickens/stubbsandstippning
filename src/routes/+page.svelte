@@ -39,7 +39,7 @@
 
 {#if data.currentRound}
 	<form method="POST" action="?/submit" use:enhance>
-		<p class="round-name"><strong>{data.currentRound.name}</strong></p>
+		<p class="round-name">⚽ <strong>{data.currentRound.name}</strong> ⚽</p>
 		{#if data.isClosed}
 			<p class="closed">Tippningen är stängd, matcherna har redan börjat spelas.</p>
 		{:else if form?.success}
@@ -126,9 +126,10 @@
 		text-align: center;
 	}
 	.round-name {
-		margin-bottom: var(--space-l);
+		margin-top: var(--space-m);
+		margin-bottom: var(--space-xl);
 		font-size: var(--font-size-600);
-		font-weight: 300;
+		font-weight: 400;
 	}
 
 	.already-submitted {
