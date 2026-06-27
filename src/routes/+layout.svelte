@@ -72,7 +72,7 @@
 		a {
 			text-decoration: none;
 			color: var(--color-neutral-700);
-			font-size: var(--font-size-800);
+			font-size: var(--font-size-600);
 
 			&:first-child {
 				grid-column: 1;
@@ -95,7 +95,7 @@
 			}
 
 			&.active {
-				font-size: var(--font-size-600);
+				font-size: var(--font-size-800);
 				font-weight: bold;
 				color: var(--color-neutral-900);
 			}

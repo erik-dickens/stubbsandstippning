@@ -58,12 +58,13 @@
 			{#if alreadySubmitted}
 				<p class="already-submitted">{selectedPlayerName} har redan tippat i {data.currentRound.name}</p>
 			{:else if selectedPlayerId !== ''}
+				<p style="margin-bottom: var(--space-l);"><strong>Välj vinnaren i följande matcher:</strong></p>
 				<div class="prediction-items">
 					{#each data.predictionItems as item, i (item.id)}
 						<div class="prediction-item">
 							<p class="item-question">
 								{#if !item.question}
-									Match {i + 1}:
+									Match {i + 1}
 								{:else}
 									{item.question}
 								{/if}
@@ -126,7 +127,7 @@
 	}
 	.round-name {
 		margin-bottom: var(--space-l);
-		font-size: var(--font-size-500);
+		font-size: var(--font-size-600);
 		font-weight: 300;
 	}
 
@@ -180,7 +181,7 @@
 
 	.item-question {
 		font-size: var(--font-size-400);
-		font-weight: 500;
+		font-weight: 400;
 	}
 
 	.tiebreaker-input {
